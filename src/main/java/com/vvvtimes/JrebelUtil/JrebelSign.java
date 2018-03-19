@@ -6,19 +6,19 @@ public class JrebelSign {
     private String signature;
 
     public void toLeaseCreateJson(String clientRandomness, String guid, boolean offline, String validFrom, String validUntil) {
-        //String serverRandomness = ByteUtil.a(ByteUtil.a(8));
-        String serverRandomness =  "H2ulzLlh7E0="; //服务端随机数,如果要自己生成，务必将其写到json的serverRandomness中
+        // String serverRandomness = ByteUtil.a(ByteUtil.a(8));
+        String serverRandomness = "H2ulzLlh7E0="; // 服务端随机数,如果要自己生成，务必将其写到json的serverRandomness中
         String installationGuidString = guid;
-        //String value = String.valueOf("false");
-        String s2= "";
-        if(offline){
-            s2 = StringUtils.join((Object[]) new String[]{clientRandomness, serverRandomness, installationGuidString , String.valueOf(offline), validFrom, validUntil}, ';');
-        }else{
-            s2 = StringUtils.join((Object[]) new String[]{clientRandomness, serverRandomness, installationGuidString , String.valueOf(offline)}, ';');
+        // String value = String.valueOf("false");
+        String s = "";
+        if (offline) {
+            s = StringUtils.join(new String[]{clientRandomness, serverRandomness, installationGuidString, String.valueOf(true), validFrom, validUntil}, ';');
+        } else {
+            s = StringUtils.join(new String[]{clientRandomness, serverRandomness, installationGuidString, String.valueOf(false)}, ';');
         }
-        System.out.println(s2);
-        final byte[] a2 =LicenseServer2ToJRebelPrivateKey.a(s2.getBytes());
-        this.signature = ByteUtil.a(a2);
+        System.out.println(s);
+        final byte[] bytes = LicenseServer2ToJRebelPrivateKey.a(s.getBytes());
+        this.signature = ByteUtil.a(bytes);
     }
 
     public String getSignature() {

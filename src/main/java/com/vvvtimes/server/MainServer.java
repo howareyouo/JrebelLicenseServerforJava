@@ -114,7 +114,7 @@ public class MainServer extends AbstractHandler {
         if (offline) {
             String clientTime = request.getParameter("clientTime");
             String offlineDays = request.getParameter("offlineDays");
-            //long clinetTimeUntil = Long.parseLong(clientTime) + Long.parseLong(offlineDays)  * 24 * 60 * 60 * 1000;
+            // long clinetTimeUntil = Long.parseLong(clientTime) + Long.parseLong(offlineDays)  * 24 * 60 * 60 * 1000;
             long clinetTimeUntil = Long.parseLong(clientTime) + 180L * 24 * 60 * 60 * 1000;
             validFrom = clientTime;
             validUntil = String.valueOf(clinetTimeUntil);
@@ -141,7 +141,7 @@ public class MainServer extends AbstractHandler {
                 "        \n" +
                 "    ],\n" +
                 "    \"licenseValidFrom\": 1490544001000,\n" +
-                "    \"licenseValidUntil\": 1691839999000\n" +
+                "    \"licenseValidUntil\": 1920597071000\n" +
                 "}";
 
         JSONObject jsonObject = JSONObject.fromObject(jsonStr);

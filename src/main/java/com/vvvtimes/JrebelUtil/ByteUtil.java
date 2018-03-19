@@ -1,11 +1,16 @@
 package com.vvvtimes.JrebelUtil;
+
 import org.apache.commons.codec.binary.Base64;
 
 import java.nio.charset.Charset;
 import java.util.Random;
 
 public class ByteUtil {
-    private static final Random a;
+    private static final Random r;
+
+    static {
+        r = new Random();
+    }
 
     public static String a(final byte[] binaryData) {
         if (binaryData == null) {
@@ -23,11 +28,7 @@ public class ByteUtil {
 
     public static byte[] a(final int n) {
         final byte[] array = new byte[n];
-        ByteUtil.a.nextBytes(array);
+        ByteUtil.r.nextBytes(array);
         return array;
-    }
-
-    static {
-        a = new Random();
     }
 }
