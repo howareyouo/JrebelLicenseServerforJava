@@ -3,21 +3,19 @@ package com.vvvtimes.server;
 import com.vvvtimes.JrebelUtil.JrebelSign;
 import com.vvvtimes.util.rsasign;
 import net.sf.json.JSONObject;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.AbstractHandler;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.AbstractHandler;
 
 public class MainServer extends AbstractHandler {
 
@@ -113,7 +111,7 @@ public class MainServer extends AbstractHandler {
         String validUntil = "null";
         if (offline) {
             String clientTime = request.getParameter("clientTime");
-            String offlineDays = request.getParameter("offlineDays");
+            // String offlineDays = request.getParameter("offlineDays");
             // long clinetTimeUntil = Long.parseLong(clientTime) + Long.parseLong(offlineDays)  * 24 * 60 * 60 * 1000;
             long clinetTimeUntil = Long.parseLong(clientTime) + 180L * 24 * 60 * 60 * 1000;
             validFrom = clientTime;
@@ -158,14 +156,14 @@ public class MainServer extends AbstractHandler {
         }
     }
 
-    private void releaseTicketHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException{
+    private void releaseTicketHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         String salt = request.getParameter("salt");
         baseRequest.setHandled(true);
-        if(salt==null){
+        if (salt == null) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }else{
+        } else {
             String xmlContent = "<ReleaseTicketResponse><message></message><responseCode>OK</responseCode><salt>" + salt + "</salt></ReleaseTicketResponse>";
             String xmlSignature = rsasign.Sign(xmlContent);
             String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
@@ -173,22 +171,21 @@ public class MainServer extends AbstractHandler {
         }
     }
 
-    private void obtainTicketHandler ( String target , Request baseRequest , HttpServletRequest request ,
-                                       HttpServletResponse response ) throws IOException
-    {
+    private void obtainTicketHandler(String target, Request baseRequest, HttpServletRequest request,
+                                     HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
-        SimpleDateFormat fm=new SimpleDateFormat("EEE,d MMM yyyy hh:mm:ss Z", Locale.ENGLISH);
-        String date =fm.format(new Date())+" GMT";
+        SimpleDateFormat fm = new SimpleDateFormat("EEE,d MMM yyyy hh:mm:ss Z", Locale.ENGLISH);
+        String date = fm.format(new Date()) + " GMT";
         //response.setHeader("Date", date);
         //response.setHeader("Server", "fasthttp");
         String salt = request.getParameter("salt");
         String username = request.getParameter("userName");
         String prolongationPeriod = "607875500";
         baseRequest.setHandled(true);
-        if(salt==null||username==null){
+        if (salt == null || username == null) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }else{
+        } else {
             String xmlContent = "<ObtainTicketResponse><message></message><prolongationPeriod>" + prolongationPeriod + "</prolongationPeriod><responseCode>OK</responseCode><salt>" + salt + "</salt><ticketId>1</ticketId><ticketProperties>licensee=" + username + "\tlicenseType=0\t</ticketProperties></ObtainTicketResponse>";
             String xmlSignature = rsasign.Sign(xmlContent);
             String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
@@ -196,15 +193,14 @@ public class MainServer extends AbstractHandler {
         }
     }
 
-    private void pingHandler ( String target , Request baseRequest , HttpServletRequest request , HttpServletResponse response ) throws IOException
-    {
+    private void pingHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         String salt = request.getParameter("salt");
         baseRequest.setHandled(true);
-        if(salt==null){
+        if (salt == null) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }else{
+        } else {
             String xmlContent = "<PingResponse><message></message><responseCode>OK</responseCode><salt>" + salt + "</salt></PingResponse>";
             String xmlSignature = rsasign.Sign(xmlContent);
             String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
