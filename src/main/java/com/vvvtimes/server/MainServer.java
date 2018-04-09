@@ -12,10 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class MainServer extends AbstractHandler {
 
@@ -50,7 +47,7 @@ public class MainServer extends AbstractHandler {
 
         System.out.println("License Server started at http://localhost:" + port);
         System.out.println("JetBrains Activation address was: http://localhost:" + port + "/{tokenname}, with any email.");
-        System.out.println("JRebel Activation address was: http://localhost:" + port + "/{tokenname}, with any email.");
+        System.out.println("JRebel Activation address was: http://localhost:" + port + "/" + UUID.randomUUID() +", with any email.");
 
         server.join();
     }
