@@ -6,7 +6,7 @@
 
   <groupId>com.vvvtimes.com</groupId>
   <artifactId>JrebelBrainsLicenseServerforJava</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,8 +20,8 @@
         <!-- 与Servlet版本对应 -->
         <version>3.1</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
           <encoding>utf8</encoding>
         </configuration>
       </plugin>
@@ -82,16 +82,16 @@
     </dependency>
 
     <dependency>
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
-      <version>2.4</version>
-      <classifier>jdk15</classifier>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.1</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.json/json -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20180130</version>
     </dependency>
 
   </dependencies>
