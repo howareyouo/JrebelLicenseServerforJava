@@ -2,7 +2,6 @@ package com.vvvtimes.server;
 
 import com.vvvtimes.JrebelUtil.JrebelSign;
 import com.vvvtimes.util.rsasign;
-import net.sf.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -15,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.json.JSONObject;
 
 public class MainServer extends AbstractHandler {
 
@@ -56,8 +56,7 @@ public class MainServer extends AbstractHandler {
     }
 
 
-    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
         System.out.println(target);
         if (target.equals("/")) {
             indexHandler(target, baseRequest, request, response);
@@ -98,7 +97,7 @@ public class MainServer extends AbstractHandler {
                 "    \"evaluationLicense\": false,\n" +
                 "    \"seatPoolType\": \"standalone\"\n" +
                 "}\n";
-        JSONObject jsonObject = JSONObject.fromObject(jsonStr);
+        JSONObject jsonObject = new JSONObject(jsonStr);
         String body = jsonObject.toString();
         response.getWriter().print(body);
     }
@@ -117,7 +116,7 @@ public class MainServer extends AbstractHandler {
                 "    \"msg\": null,\n" +
                 "    \"statusMessage\": null\n" +
                 "}\n";
-        JSONObject jsonObject = JSONObject.fromObject(jsonStr);
+        JSONObject jsonObject = new JSONObject(jsonStr);
         if (username != null ) {
             jsonObject.put("company", username);
         }
@@ -169,7 +168,7 @@ public class MainServer extends AbstractHandler {
                 "    \"licenseValidUntil\": 1691839999000\n" +
                 "}";
 
-        JSONObject jsonObject = JSONObject.fromObject(jsonStr);
+        JSONObject jsonObject = new JSONObject(jsonStr);
         if (clientRandomness == null || username == null || guid == null) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         } else {
