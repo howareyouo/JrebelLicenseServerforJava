@@ -10,6 +10,8 @@ import org.json.JSONObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -44,10 +46,11 @@ public class MainServer extends AbstractHandler {
         server.setHandler(new MainServer());
         server.start();
 
-        System.out.println("License Server started at http://localhost:" + port);
-        System.out.println("JetBrains Activation address was: http://localhost:" + port + "/");
-        System.out.println("JRebel 7.1 and earlier version Activation address was: http://localhost:" + port + "/{tokenname}, with any email.");
-        System.out.println("JRebel 2018.1 and later version Activation address was: http://localhost:" + port + "/{guid}(eg:http://localhost:" + port + "/" + UUID.randomUUID().toString() + "), with any email.");
+        String ip = getSiteIp();
+        System.out.printf("License Server started at http://%s:%s\n", ip, port);
+        System.out.printf("JetBrains Activation address was: http://%s:%s\n", ip, port);
+        System.out.printf("JRebel 7.1 and earlier version Activation address was: http://%s:%s/{tokenname}, with any email\n", ip, port);
+        System.out.printf("JRebel 2018.1 and later version Activation address was: http://%s:%s/{guid} eg:http://%s:%s/%s\n", ip, port, ip, port, UUID.randomUUID().toString());
 
         server.join();
     }
@@ -241,6 +244,30 @@ public class MainServer extends AbstractHandler {
             response.getWriter().print(body);
         }
 
+    }
+
+    /**
+     * 获取内网IP
+     *
+     * @return 内网IP
+     */
+    public static String getSiteIp() {
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface network = interfaces.nextElement();
+                Enumeration<InetAddress> addresses = network.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress address = addresses.nextElement();
+                    if (address.isSiteLocalAddress()) {
+                        return address.getHostAddress();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "127.0.0.1";
     }
 
     private void indexHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
