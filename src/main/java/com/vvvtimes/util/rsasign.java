@@ -2,7 +2,7 @@ package com.vvvtimes.util;
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.pkcs.RSAPrivateKeyStructure;
+import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
 
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -46,53 +46,52 @@ public class rsasign {
             + "qQIhAKp2v5e8AMj9ROFO5B6m4SsVrIkwFICw17c0WzDRxTEBAiAYDmftk990GLcF"
             + "0zhV4lZvztasuWRXE+p4NJtwasLIyQIgVKzknJe8VOt5a3shCMOyysoNEg+YAt02"
             + "O98RPCU0nJg=";
-	
-	public static String Sign(String content){
-	    return rsasign.Sign(content.getBytes(), key22);
-	}
-	
-	public static String Sign2(String content){
+
+    public static String Sign(String content) {
+        return rsasign.Sign(content.getBytes(), key22);
+    }
+
+    public static String Sign2(String content) {
         return rsasign.Sign2(content.getBytes(), key33);
     }
-	
-	//传入秘钥为ASN格式
+
+    //传入秘钥为ASN格式
     //私钥签名程序，privateKey是私钥base64编码字符串，即私钥文件数据中，中间的主体部分
     public static String Sign(byte[] content, String privateKey) {
-	try {
-		byte[] keybyte = Base64.decode(privateKey.toString());
-		ASN1InputStream in = new ASN1InputStream(keybyte);
-		ASN1Primitive obj = in.readObject();
-		RSAPrivateKeyStructure pStruct = RSAPrivateKeyStructure.getInstance(obj);
-		RSAPrivateKeySpec spec = new RSAPrivateKeySpec(pStruct.getModulus(), pStruct.getPrivateExponent());
-		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-		PrivateKey priKey = keyFactory.generatePrivate(spec);
-		java.security.Signature signature = java.security.Signature.getInstance("MD5WithRSA");
-		signature.initSign(priKey);
-		signature.update(content);
-		byte[] signed = signature.sign();
-		return Hex.bytesToHexString(signed);
-        }
-        catch (Exception e) {
+        try {
+            byte[] keybyte = Base64.decode(privateKey);
+            ASN1InputStream in = new ASN1InputStream(keybyte);
+            ASN1Primitive obj = in.readObject();
+            RSAPrivateKey pStruct = RSAPrivateKey.getInstance(obj);
+            RSAPrivateKeySpec spec = new RSAPrivateKeySpec(pStruct.getModulus(), pStruct.getPrivateExponent());
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PrivateKey priKey = keyFactory.generatePrivate(spec);
+            java.security.Signature signature = java.security.Signature.getInstance("MD5WithRSA");
+            signature.initSign(priKey);
+            signature.update(content);
+            byte[] signed = signature.sign();
+            return Hex.bytesToHexString(signed);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
-	    
+
     //传入秘钥为PKCS#8私钥非加密格式
-	//私钥签名程序，privateKey是私钥base64编码字符串，即私钥文件数据中，中间的主体部分
-	public static String Sign2(byte[] content, String privateKey) {
-		try {
-			PKCS8EncodedKeySpec priPKCS8 = new PKCS8EncodedKeySpec(Base64.decode(privateKey));
-			KeyFactory keyf = KeyFactory.getInstance("RSA");
-			PrivateKey priKey = keyf.generatePrivate(priPKCS8);
-			java.security.Signature signature = java.security.Signature.getInstance("MD5WithRSA");
-			signature.initSign(priKey);
-			signature.update(content);
-			byte[] signed = signature.sign();
-			return Hex.bytesToHexString(signed);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    //私钥签名程序，privateKey是私钥base64编码字符串，即私钥文件数据中，中间的主体部分
+    public static String Sign2(byte[] content, String privateKey) {
+        try {
+            PKCS8EncodedKeySpec priPKCS8 = new PKCS8EncodedKeySpec(Base64.decode(privateKey));
+            KeyFactory keyf = KeyFactory.getInstance("RSA");
+            PrivateKey priKey = keyf.generatePrivate(priPKCS8);
+            java.security.Signature signature = java.security.Signature.getInstance("MD5WithRSA");
+            signature.initSign(priKey);
+            signature.update(content);
+            byte[] signed = signature.sign();
+            return Hex.bytesToHexString(signed);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

@@ -2,24 +2,21 @@ package com.vvvtimes.server;
 
 import com.vvvtimes.JrebelUtil.JrebelSign;
 import com.vvvtimes.util.rsasign;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.json.JSONObject;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 public class MainServer extends AbstractHandler {
 
-    public static Map<String, String> parseArguments(String[] args) {
-        Map<String, String> params = new HashMap<String, String>();
+    private static Map<String, String> parseArguments(String[] args) {
+        Map<String, String> params = new HashMap<>();
 
         String option = null;
         for (final String arg : args) {
@@ -50,7 +47,7 @@ public class MainServer extends AbstractHandler {
         System.out.println("License Server started at http://localhost:" + port);
         System.out.println("JetBrains Activation address was: http://localhost:" + port + "/");
         System.out.println("JRebel 7.1 and earlier version Activation address was: http://localhost:" + port + "/{tokenname}, with any email.");
-        System.out.println("JRebel 2018.1 and later version Activation address was: http://localhost:" + port + "/{guid}(eg:http://localhost:" + port + "/"+ UUID.randomUUID().toString()+"), with any email.");
+        System.out.println("JRebel 2018.1 and later version Activation address was: http://localhost:" + port + "/{guid}(eg:http://localhost:" + port + "/" + UUID.randomUUID().toString() + "), with any email.");
 
         server.join();
     }
@@ -58,30 +55,41 @@ public class MainServer extends AbstractHandler {
 
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
         System.out.println(target);
-        if (target.equals("/")) {
-            indexHandler(target, baseRequest, request, response);
-        } else if (target.equals("/jrebel/leases")) {
-            jrebelLeasesHandler(target, baseRequest, request, response);
-        } else if (target.equals("/jrebel/leases/1")) {
-            jrebelLeases1Handler(target, baseRequest, request, response);
-        } else if (target.equals("/agent/leases")) {
-            jrebelLeasesHandler(target, baseRequest, request, response);
-        } else if (target.equals("/agent/leases/1")) {
-            jrebelLeases1Handler(target, baseRequest, request, response);
-        } else if (target.equals("/jrebel/validate-connection")) {
-            jrebelValidateHandler(target, baseRequest, request, response);
-        } else if (target.equals("/rpc/ping.action")) {
-            pingHandler(target, baseRequest, request, response);
-        } else if (target.equals("/rpc/obtainTicket.action")) {
-            obtainTicketHandler(target, baseRequest, request, response);
-        } else if (target.equals("/rpc/releaseTicket.action")) {
-            releaseTicketHandler(target, baseRequest, request, response);
-        } else {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        switch (target) {
+            case "/":
+                indexHandler(target, baseRequest, request, response);
+                break;
+            case "/jrebel/leases":
+                jrebelLeasesHandler(target, baseRequest, request, response);
+                break;
+            case "/jrebel/leases/1":
+                jrebelLeases1Handler(target, baseRequest, request, response);
+                break;
+            case "/agent/leases":
+                jrebelLeasesHandler(target, baseRequest, request, response);
+                break;
+            case "/agent/leases/1":
+                jrebelLeases1Handler(target, baseRequest, request, response);
+                break;
+            case "/jrebel/validate-connection":
+                jrebelValidateHandler(target, baseRequest, request, response);
+                break;
+            case "/rpc/ping.action":
+                pingHandler(target, baseRequest, request, response);
+                break;
+            case "/rpc/obtainTicket.action":
+                obtainTicketHandler(target, baseRequest, request, response);
+                break;
+            case "/rpc/releaseTicket.action":
+                releaseTicketHandler(target, baseRequest, request, response);
+                break;
+            default:
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                break;
         }
     }
 
-    private void jrebelValidateHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException  {
+    private void jrebelValidateHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
@@ -117,7 +125,7 @@ public class MainServer extends AbstractHandler {
                 "    \"statusMessage\": null\n" +
                 "}\n";
         JSONObject jsonObject = new JSONObject(jsonStr);
-        if (username != null ) {
+        if (username != null) {
             jsonObject.put("company", username);
         }
         String body = jsonObject.toString();
@@ -182,14 +190,14 @@ public class MainServer extends AbstractHandler {
         }
     }
 
-    private void releaseTicketHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException{
+    private void releaseTicketHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         String salt = request.getParameter("salt");
         baseRequest.setHandled(true);
-        if(salt==null){
+        if (salt == null) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }else{
+        } else {
             String xmlContent = "<ReleaseTicketResponse><message></message><responseCode>OK</responseCode><salt>" + salt + "</salt></ReleaseTicketResponse>";
             String xmlSignature = rsasign.Sign(xmlContent);
             String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
@@ -197,22 +205,21 @@ public class MainServer extends AbstractHandler {
         }
     }
 
-    private void obtainTicketHandler ( String target , Request baseRequest , HttpServletRequest request ,
-                                       HttpServletResponse response ) throws IOException
-    {
+    private void obtainTicketHandler(String target, Request baseRequest, HttpServletRequest request,
+                                     HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
-        SimpleDateFormat fm=new SimpleDateFormat("EEE,d MMM yyyy hh:mm:ss Z", Locale.ENGLISH);
-        String date =fm.format(new Date())+" GMT";
+        SimpleDateFormat fm = new SimpleDateFormat("EEE,d MMM yyyy hh:mm:ss Z", Locale.ENGLISH);
+        String date = fm.format(new Date()) + " GMT";
         //response.setHeader("Date", date);
         //response.setHeader("Server", "fasthttp");
         String salt = request.getParameter("salt");
         String username = request.getParameter("userName");
         String prolongationPeriod = "607875500";
         baseRequest.setHandled(true);
-        if(salt==null||username==null){
+        if (salt == null || username == null) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }else{
+        } else {
             String xmlContent = "<ObtainTicketResponse><message></message><prolongationPeriod>" + prolongationPeriod + "</prolongationPeriod><responseCode>OK</responseCode><salt>" + salt + "</salt><ticketId>1</ticketId><ticketProperties>licensee=" + username + "\tlicenseType=0\t</ticketProperties></ObtainTicketResponse>";
             String xmlSignature = rsasign.Sign(xmlContent);
             String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
@@ -220,15 +227,14 @@ public class MainServer extends AbstractHandler {
         }
     }
 
-    private void pingHandler ( String target , Request baseRequest , HttpServletRequest request , HttpServletResponse response ) throws IOException
-    {
+    private void pingHandler(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         String salt = request.getParameter("salt");
         baseRequest.setHandled(true);
-        if(salt==null){
+        if (salt == null) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }else{
+        } else {
             String xmlContent = "<PingResponse><message></message><responseCode>OK</responseCode><salt>" + salt + "</salt></PingResponse>";
             String xmlSignature = rsasign.Sign(xmlContent);
             String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
